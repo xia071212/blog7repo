@@ -1,0 +1,9 @@
+sample,n,employment_weighted,major_group_controls,exposure_coefficient_per_10pp
+all,722,False,False,0.10695512411453857
+all,722,False,True,-0.07312021349200695
+all,722,True,False,-0.5310752318907422
+all,722,True,True,0.4270714285401047
+focus,115,False,False,0.6507563291208717
+focus,115,False,True,-0.18800777733481314
+focus,115,True,False,0.3194466398668957
+focus,115,True,True,0.3151634737020023
