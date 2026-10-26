@@ -2,9 +2,14 @@
 from pathlib import Path
 import re, zipfile
 R=Path(__file__).resolve().parents[1]
-DEST=R.parent/'myrepo1/blog/posts/post7'
+import argparse
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--website-dir',type=Path,help='Optional destination for website assets')
+args=parser.parse_args()
+DEST=R/'results'
 DEST.mkdir(parents=True,exist_ok=True)
-s=(R/'results/interactive_sample.html').read_text()
+source=R/'results/interactive_sample.html'
+s=source.read_text() if source.exists() else (R/'results/interactive.html').read_text()
 # Remove the prototype's duplicate article heading and footer, preserving chart and task panel.
 s=re.sub(r'<main><div class="eyebrow">.*?<section class="card">','<main><section class="card">',s,count=1,flags=re.S)
 s=re.sub(r'<p class="footer">.*?</p></main>','</main>',s,count=1,flags=re.S)
@@ -43,24 +48,23 @@ translations={
 pattern=re.compile('|'.join(re.escape(k) for k in sorted(translations,key=len,reverse=True)))
 s=pattern.sub(lambda m:translations[m.group()],s).replace('lang="zh-CN"','lang="en"')
 s=s.replace('main{max-width:1160px;margin:auto;padding:38px 24px}','main{max-width:1160px;margin:auto;padding:0 4px}').replace('main{padding:22px 12px}','main{padding:0 4px}')
+s=s.replace('<title>Blog 7 · Interactive sample</title>','<title>Blog 7 | AI exposure and employment outlook</title>')
 (DEST/'interactive.html').write_text(s)
-files=['code/build_interactive_sample.py','code/check_projection_patterns.py','code/regress_projections.py','requirements.txt','data/raw/job_exposure.csv','data/raw/bls_projections_2024_2034.zip','results/tasks/soc_task_metrics.csv','results/tasks/task_matches.csv']
-files += [str(p.relative_to(R)) for p in (R/'data/processed').glob('projections*.csv')]
-files += [str(p.relative_to(R)) for p in (R/'results/projection_patterns').glob('*')]
-readme='''# Blog 7: AI exposure and employment outlook
 
-This focused package reproduces the 722-occupation chart and descriptive comparisons.
-Install requirements.txt, then run code/build_interactive_sample.py and code/check_projection_patterns.py and code/regress_projections.py in that order. Paths resolve relative to the scripts. The first produces results/interactive_sample.html, a self-contained Plotly chart, and the processed projection samples. The second writes results/projection_patterns/.
-
-Sources: BLS official 2024–2034 archive https://www.bls.gov/emp/projections-archive/2024-34.zip (occupation.xlsx, Table 1.2); Anthropic job_exposure.csv and task_penetration.csv from https://www.anthropic.com/research/labor-market-impacts; O*NET 30.0 task descriptions https://www.onetcenter.org/database.html. The task tables are retained inputs from the task-matching stage; see the main README included below for that stage's methods. Employment is converted from thousands to people. Use detailed Line item rows, match SOC, and retain task coverage >=95%.
-
-Group exposure/breadth use 2024 employment weights; group growth uses summed employment levels. Detailed growth uses the published BLS percentages. Detailed dots have equal sizes. Group bubbles encode sample employment. Coverage is relative to official major-group employment. Search isolates one occupation; clearing restores the group. The chart uses Chinese labels; the article's embedded copy translates the same chart into English.
-
-The bin comparisons use only shared exposure intervals and pooled employment weights across intervals; they are descriptive, not causal or significance tests. Output CSVs report sample coverage. Predictions are not realized employment or AI replacement rates.
-'''
-with zipfile.ZipFile(DEST/'replication.zip','w',zipfile.ZIP_DEFLATED) as z:
- for f in files:z.write(R/f,f)
- z.writestr('README.md',readme)
- z.write(R/'README.md','full_analysis_README.md')
-(DEST/'regression_table.md').write_text((R/'results/projection_patterns/regression_table.md').read_text())
+# Remove the intermediate localized prototype; the final artifact is English.
+(R/'results/interactive_sample.html').unlink(missing_ok=True)
+if args.website_dir:
+ import shutil
+ destination=args.website_dir.resolve();destination.mkdir(parents=True,exist_ok=True)
+ shutil.copy2(DEST/'interactive.html',destination/'interactive.html')
+ shutil.copy2(R/'results/projection_patterns/regression_table.md',destination/'regression_table.md')
+ files=['README.md','requirements.txt']
+ files += ['code/'+n for n in ['reproduce.py','build_interactive_sample.py','regress_projections.py','build_blog_assets.py']]
+ files += ['data/raw/'+n for n in ['job_exposure.csv','task_penetration.csv','onet30_task_statements.xlsx','bls_projections_2024_2034.zip','anthropic_README.md','anthropic_revision.json']]
+ files += ['results/tasks/'+n for n in ['soc_task_metrics.csv','task_matches.csv']]
+ files += ['results/projection_patterns/'+n for n in ['regressions.csv','regression_table.md']]
+ files += [str(p.relative_to(R)) for p in (R/'data/processed').glob('projections*.csv')]
+ files += ['results/interactive.html']
+ with zipfile.ZipFile(destination/'replication.zip','w',zipfile.ZIP_DEFLATED) as z:
+  for f in files:z.write(R/f,f)
 print(DEST/'interactive.html')
