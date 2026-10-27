@@ -23,26 +23,23 @@ Task breadth is the number of matched tasks with positive penetration divided by
 
 The analysis joins exposure, tasks, and BLS projections by SOC, retaining occupations with at least 95% task matching. The resulting sample has 722 occupations across 22 major groups. Detailed growth uses the published BLS percentage change. Group exposure and breadth use 2024 employment weights; group growth is 100 times summed 2034 employment divided by summed 2024 employment, minus 100. Bubble area represents matched-sample employment, and hover information reports its coverage of the official group total. Detailed dots are equal-sized.
 
-Supplementary regressions, retained for reproducibility but not used in the article’s chart-based discussion, relate projected percentage employment growth to exposure and breadth. Coefficients represent a ten-percentage-point increase in the indicator. The main specification weights by 2024 employment; alternatives add major-group intercepts or use equal occupation weights. The table reports 95% HC3 robust confidence intervals with Student-t critical values. These describe model-based uncertainty across occupations, not BLS forecast uncertainty; they do not model within-group error dependence. Projections of net employment do not identify AI-caused displacement.
 
 ## Code and outputs
 
-[code/reproduce.py](code/reproduce.py) runs four numbered stages: setup, task matching, projection analysis and regressions, and the English interactive chart. Paths resolve relative to the project, and output directories are created automatically.
+[code/reproduce.py](code/reproduce.py) runs four numbered stages: setup, task matching, projection matching and group aggregation, and the English interactive chart. Paths resolve relative to the project, and output directories are created automatically.
 
 | Code | Role |
 |---|---|
 | `code/reproduce.py` | Entry point; rebuild task matches and run the article workflow |
 | `code/build_interactive_sample.py` | Clean BLS projections, match occupations, aggregate groups, and construct the linked Plotly chart |
-| `code/regress_projections.py` | Estimate OLS/WLS models and save coefficients, intervals, and a supplementary table |
 | `code/build_blog_assets.py` | Produce the English chart; optionally copy deployment assets and create the download package for the website |
 
 | Output | Connection to the article |
 |---|---|
 | `results/interactive.html` | English offline Plotly visualization: group selection, occupation search, metric switching, and task details |
-| `data/processed/projections_2024_2034_task_sample.csv` | The 722 detailed occupations plotted and used in regressions |
+| `data/processed/projections_2024_2034_task_sample.csv` | The 722 detailed occupations plotted in the chart |
 | `data/processed/projections_major_groups.csv` | Employment-weighted bubbles and coverage of each major group |
 | `results/tasks/task_matches.csv`, `soc_task_metrics.csv` | Task panel, matching coverage, and task breadth |
-| `results/projection_patterns/regressions.csv`, `regression_table.md` | Supplementary regression estimates; not displayed or used to draw the article’s conclusions |
 
 The article and decorative illustration are maintained in the separate website repository. Ordinary analysis reproduction does not edit or render the website. Earlier OEWS/CPS explorations are outside the current article's replication workflow.
 
@@ -50,6 +47,6 @@ The article and decorative illustration are maintained in the separate website r
 
 1. Download this repository with its `code/`, `data/`, and `results/` folders intact. Prepare Python 3.12 and install the packages listed in `requirements.txt`.
 2. Open `code/reproduce.py` and run it with Python. The saved inputs allow the complete workflow to run without network access or Quarto.
-3. Open `results/interactive.html` in a browser and inspect the rebuilt CSV and Markdown tables. Select a group, search for an occupation to isolate its dot, and clear the search to restore the group.
+3. Open `results/interactive.html` in a browser and inspect the rebuilt CSV tables. Select a group, search for an occupation to isolate its dot, and clear the search to restore the group.
 
-The code checks unique SOC joins, consistent task matches, reconciliation of group employment totals, and coverage bounds. The regressions and chart data are generated from the same retained sample. No random sampling is used.
+The code checks unique SOC joins, consistent task matches, reconciliation of group employment totals, and coverage bounds. No random sampling is used.

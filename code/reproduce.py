@@ -1,4 +1,4 @@
-"""Reproduce the Blog 7 chart and regression table from saved public inputs."""
+"""Reproduce the Blog 7 chart from saved public inputs."""
 # 1. Setup: project-relative paths and deterministic inputs.
 from pathlib import Path
 import runpy
@@ -24,9 +24,8 @@ for code,a in m.groupby('code'):
  rows.append(dict(code=code,n_tasks=len(a),n_matched=n,coverage=n/len(a),breadth=(x>0).mean() if n else np.nan,high50=(x>=.5).mean() if n else np.nan,high80=(x>=.8).mean() if n else np.nan,mean_penetration=x.mean() if n else np.nan,concentration=h))
 f=pd.DataFrame(rows);f.to_csv(O/'soc_task_metrics.csv',index=False)
 
-# 3. Match BLS projections and exposure, save chart data, and estimate regressions.
+# 3. Match BLS projections and exposure, save chart data.
 runpy.run_path(str(R/'code/build_interactive_sample.py'),run_name='__main__')
-runpy.run_path(str(R/'code/regress_projections.py'),run_name='__main__')
 
 # 4. Produce the English, offline interactive visualization.
 runpy.run_path(str(R/'code/build_blog_assets.py'),run_name='__main__')

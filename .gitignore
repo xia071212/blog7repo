@@ -5,11 +5,9 @@ __pycache__/
 /results/*
 !/results/interactive.html
 !/results/tasks/
-!/results/projection_patterns/
 /code/*
 !/code/reproduce.py
 !/code/build_interactive_sample.py
-!/code/regress_projections.py
 !/code/build_blog_assets.py
 /data/raw/*
 !/data/raw/job_exposure.csv
@@ -24,6 +22,3 @@ __pycache__/
 /results/tasks/*
 !/results/tasks/soc_task_metrics.csv
 !/results/tasks/task_matches.csv
-/results/projection_patterns/*
-!/results/projection_patterns/regressions.csv
-!/results/projection_patterns/regression_table.md

@@ -57,12 +57,10 @@ if args.website_dir:
  import shutil
  destination=args.website_dir.resolve();destination.mkdir(parents=True,exist_ok=True)
  shutil.copy2(DEST/'interactive.html',destination/'interactive.html')
- shutil.copy2(R/'results/projection_patterns/regression_table.md',destination/'regression_table.md')
  files=['README.md','requirements.txt']
- files += ['code/'+n for n in ['reproduce.py','build_interactive_sample.py','regress_projections.py','build_blog_assets.py']]
+ files += ['code/'+n for n in ['reproduce.py','build_interactive_sample.py','build_blog_assets.py']]
  files += ['data/raw/'+n for n in ['job_exposure.csv','task_penetration.csv','onet30_task_statements.xlsx','bls_projections_2024_2034.zip','anthropic_README.md','anthropic_revision.json']]
  files += ['results/tasks/'+n for n in ['soc_task_metrics.csv','task_matches.csv']]
- files += ['results/projection_patterns/'+n for n in ['regressions.csv','regression_table.md']]
  files += [str(p.relative_to(R)) for p in (R/'data/processed').glob('projections*.csv')]
  files += ['results/interactive.html']
  with zipfile.ZipFile(destination/'replication.zip','w',zipfile.ZIP_DEFLATED) as z:
